@@ -111,11 +111,6 @@ namespace ChompoDexDB
 
             adapter.Fill(SearchTableSet);
 
-            if (SearchTableSet != null && SearchTableSet.Tables.Count > 0)
-                {
-                object o = SearchTableSet.Tables[0];
-                }
-
             BindingSource source = new BindingSource();
             source.DataSource = SearchTableSet.Tables[0];
             searchResultsGridView.DataSource = source;
@@ -136,23 +131,22 @@ namespace ChompoDexDB
         private void saveRecipeBookToolStripMenuItem_Click(object sender, EventArgs e)
             {
 
-            saveRecipeDialog.DefaultExt = "xml";
+            saveRecipeDialog.Filter = "XML-File | *.xml";
             if (saveRecipeDialog.ShowDialog() == DialogResult.OK)
                 {
                 string cookBookName = saveRecipeDialog.FileName;
                 
                 using (Stream output = File.Create(cookBookName))
                     {
-                    string recipesQuery = "SELECT * FROM Recipes;";
+                    string recipesQuery = "SELECT * FROM Ingredients;";
                     
                     System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ChompoDexDB.Properties.Settings.connString"].ConnectionString);
                     System.Data.SqlClient.SqlCommand cmd = new System.Data.SqlClient.SqlCommand(recipesQuery, con);
                     System.Data.SqlClient.SqlDataAdapter adapter = new System.Data.SqlClient.SqlDataAdapter(cmd);
-
-
                     
-                    output.Close();
 
+                    output.Close();
+                    adapter.Fill(chompoDexDatabaseDataSet.Ingredients);
                     chompoDexDatabaseDataSet.WriteXml(cookBookName, XmlWriteMode.WriteSchema);
                     }
                 
